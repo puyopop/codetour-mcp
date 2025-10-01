@@ -24,6 +24,10 @@ This script demonstrates:
 
 An example CodeTour file that provides a tour of the CodeTour MCP server itself. This tour can be opened in VS Code with the CodeTour extension to see how the server is structured.
 
+### claude-desktop-config.json
+
+An example configuration file for Claude Desktop showing how to set up the MCP server. You can merge this with your Claude Desktop configuration file (usually located at `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS or `%APPDATA%\Claude\claude_desktop_config.json` on Windows).
+
 ## Running the Demo
 
 ```bash

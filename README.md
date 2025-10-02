@@ -226,11 +226,14 @@ remove_step({
 git clone https://github.com/puyopop/codetour-mcp.git
 cd codetour-mcp
 
-# Install dependencies
-pip install -e .
+# Install dependencies with dev extras
+uv pip install -e ".[dev]"
 
 # Run the server
-codetour-mcp
+uv run codetour-mcp
+
+# Run tests
+uv run pytest tests/ -v
 ```
 
 ## License

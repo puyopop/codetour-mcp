@@ -1,12 +1,11 @@
 """BDD step definitions for tour management."""
 
-import json
 from pathlib import Path
 
-from pytest_bdd import given, when, then, scenario, parsers
+from conftest import create_tour_file
+from pytest_bdd import given, parsers, scenario, then, when
 
-from codetour_mcp.core import save_tour, load_tour
-from conftest import create_tour_file, load_tour_file
+from codetour_mcp.core import load_tour, save_tour
 
 
 # Scenarios
@@ -86,12 +85,14 @@ def list_tours(tour_directory, tour_context, dir):
     tours = []
     for tour_file in dir_path.glob("*.tour"):
         tour_data = load_tour(str(tour_file))
-        tours.append({
-            "path": str(tour_file),
-            "title": tour_data.get("title", ""),
-            "description": tour_data.get("description", ""),
-            "stepCount": len(tour_data.get("steps", []))
-        })
+        tours.append(
+            {
+                "path": str(tour_file),
+                "title": tour_data.get("title", ""),
+                "description": tour_data.get("description", ""),
+                "stepCount": len(tour_data.get("steps", [])),
+            }
+        )
     tour_context["tour_list"] = tours
 
 
@@ -106,30 +107,21 @@ def tour_file_exists(tour_directory, path):
 @then(parsers.parse('the tour should have title "{title}"'))
 def tour_has_title(tour_directory, tour_context, title):
     """Verify tour has the expected title."""
-    if "tour_path" in tour_context:
-        tour_data = load_tour(tour_context["tour_path"])
-    else:
-        tour_data = tour_context["tour_data"]
+    tour_data = load_tour(tour_context["tour_path"]) if "tour_path" in tour_context else tour_context["tour_data"]
     assert tour_data["title"] == title
 
 
 @then(parsers.parse('the tour should have description "{description}"'))
 def tour_has_description(tour_directory, tour_context, description):
     """Verify tour has the expected description."""
-    if "tour_path" in tour_context:
-        tour_data = load_tour(tour_context["tour_path"])
-    else:
-        tour_data = tour_context["tour_data"]
+    tour_data = load_tour(tour_context["tour_path"]) if "tour_path" in tour_context else tour_context["tour_data"]
     assert tour_data.get("description") == description
 
 
-@then(parsers.parse('the tour should have {count:d} steps'))
+@then(parsers.parse("the tour should have {count:d} steps"))
 def tour_has_step_count(tour_directory, tour_context, count):
     """Verify tour has the expected number of steps."""
-    if "tour_path" in tour_context:
-        tour_data = load_tour(tour_context["tour_path"])
-    else:
-        tour_data = tour_context["tour_data"]
+    tour_data = load_tour(tour_context["tour_path"]) if "tour_path" in tour_context else tour_context["tour_data"]
     assert len(tour_data.get("steps", [])) == count
 
 
@@ -139,7 +131,7 @@ def tour_object_has_title(tour_context, title):
     assert tour_context["tour_data"]["title"] == title
 
 
-@then(parsers.parse('I should get {count:d} tours'))
+@then(parsers.parse("I should get {count:d} tours"))
 def tour_list_has_count(tour_context, count):
     """Verify tour list has the expected count."""
     assert len(tour_context["tour_list"]) == count

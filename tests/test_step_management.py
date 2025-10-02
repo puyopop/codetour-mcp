@@ -1,12 +1,9 @@
 """BDD step definitions for step management."""
 
-import json
-from pathlib import Path
+from conftest import create_tour_file
+from pytest_bdd import given, parsers, scenario, then, when
 
-from pytest_bdd import given, when, then, scenario, parsers
-
-from codetour_mcp.core import save_tour, load_tour
-from conftest import create_tour_file, load_tour_file
+from codetour_mcp.core import load_tour, save_tour
 
 
 # Scenarios
@@ -77,7 +74,7 @@ def existing_tour(tour_directory, path, title):
     return str(full_path)
 
 
-@given("the tour at \".tours/steps-tour.tour\" has steps:", target_fixture="tour_with_steps")
+@given('the tour at ".tours/steps-tour.tour" has steps:', target_fixture="tour_with_steps")
 def tour_with_steps(tour_directory, datatable):
     """Create a tour with multiple steps from a table."""
     full_path = tour_directory.parent / ".tours/steps-tour.tour"
@@ -86,12 +83,8 @@ def tour_with_steps(tour_directory, datatable):
     descriptions = datatable[1][1:]  # Second row, skip "description" header
 
     steps = []
-    for file, desc in zip(files, descriptions):
-        steps.append({
-            "file": file,
-            "pattern": f"pattern_{file}",
-            "description": desc
-        })
+    for file, desc in zip(files, descriptions, strict=False):
+        steps.append({"file": file, "pattern": f"pattern_{file}", "description": desc})
 
     tour_data = {"title": "Steps Tour", "steps": steps}
     save_tour(str(full_path), tour_data)
@@ -245,7 +238,7 @@ def get_step(tour_directory, tour_context, index, path):
 
 
 # Then steps
-@then(parsers.parse('the tour should have {count:d} steps'))
+@then(parsers.parse("the tour should have {count:d} steps"))
 def tour_has_step_count(tour_directory, tour_context, count):
     """Verify tour has the expected number of steps."""
     tour_data = load_tour(tour_context["tour_path"])
@@ -287,7 +280,7 @@ def step_has_directory(tour_directory, tour_context, index, directory):
     assert tour_data["steps"][index]["directory"] == directory
 
 
-@then(parsers.parse('I should get {count:d} steps'))
+@then(parsers.parse("I should get {count:d} steps"))
 def step_list_has_count(tour_context, count):
     """Verify step list has the expected count."""
     assert len(tour_context["step_list"]) == count

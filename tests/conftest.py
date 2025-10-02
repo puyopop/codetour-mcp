@@ -33,10 +33,7 @@ def tour_context():
 
 def create_tour_file(path: str, title: str, description: str = "", steps: list[dict[str, Any]] | None = None):
     """Helper function to create a tour file."""
-    tour_data = {
-        "title": title,
-        "steps": steps or []
-    }
+    tour_data = {"title": title, "steps": steps or []}
     if description:
         tour_data["description"] = description
 
@@ -50,5 +47,5 @@ def create_tour_file(path: str, title: str, description: str = "", steps: list[d
 
 def load_tour_file(path: str) -> dict[str, Any]:
     """Helper function to load a tour file."""
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)

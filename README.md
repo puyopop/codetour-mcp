@@ -262,11 +262,43 @@ To view your tours in VS Code:
 git clone https://github.com/puyopop/codetour-mcp.git
 cd codetour-mcp
 
-# Install in development mode
-pip install -e .
+# Install in development mode with dev dependencies
+uv sync --dev
 
 # Run the demo to verify everything works
 python examples/demo.py
+```
+
+### Code Quality
+
+#### Linting and Formatting
+
+We use [Ruff](https://docs.astral.sh/ruff/) for both linting and formatting:
+
+```bash
+# Run lint checks
+uv run ruff check .
+
+# Fix auto-fixable lint issues
+uv run ruff check --fix .
+
+# Format code
+uv run ruff format .
+
+# Check formatting without making changes
+uv run ruff format --check .
+```
+
+#### Pre-commit Hooks
+
+Install pre-commit hooks to automatically run ruff on commits:
+
+```bash
+# Install pre-commit hooks
+uv run pre-commit install
+
+# Run manually on all files
+uv run pre-commit run --all-files
 ```
 
 ### Testing
@@ -278,19 +310,24 @@ Before submitting a PR, make sure:
 python examples/demo.py
 ```
 
-2. Your code passes syntax checks:
+2. Your code passes lint checks:
 ```bash
-python -m py_compile src/codetour_mcp/*.py
+uv run ruff check .
 ```
 
-3. Generated tours are valid JSON:
+3. Your code is properly formatted:
+```bash
+uv run ruff format --check .
+```
+
+4. Generated tours are valid JSON:
 ```bash
 python -m json.tool .tours/demo-tour.tour
 ```
 
 ### Code Style
 
-- Follow PEP 8 style guidelines
+- Follow PEP 8 style guidelines (enforced by Ruff)
 - Use type hints for function parameters and return values
 - Keep functions focused and single-purpose
 - Add docstrings to all public functions and classes

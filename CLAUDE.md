@@ -10,8 +10,8 @@ This is a Model Context Protocol (MCP) server that manages VS Code CodeTour exte
 
 ### Installation and Setup
 ```bash
-# Install in development mode
-pip install -e .
+# Install in development mode with dev dependencies
+uv sync --dev
 
 # Run the MCP server
 codetour-mcp
@@ -19,14 +19,17 @@ codetour-mcp
 
 ### Testing
 ```bash
-# Run the demonstration script to test functionality
-python examples/demo.py
+# Run the BDD test suite
+uv run pytest
+
+# Run specific feature tests
+uv run pytest tests/test_tour_management.py
+
+# Run with verbose output
+uv run pytest -v
 
 # Validate Python syntax
 python -m py_compile src/codetour_mcp/*.py
-
-# Validate generated tour JSON
-python -m json.tool .tours/demo-tour.tour
 ```
 
 ## Architecture
@@ -126,9 +129,10 @@ Each step must have:
 ### Testing Changes
 
 Before commits:
-1. Run `python examples/demo.py` - must complete without errors
-2. Validate syntax: `python -m py_compile src/codetour_mcp/*.py`
-3. Check generated JSON: `python -m json.tool .tours/demo-tour.tour`
+1. Run `uv run pytest` - all tests must pass
+2. Run `uv run ruff check .` - no lint errors
+3. Run `uv run ruff format --check .` - code must be formatted
+4. Validate syntax: `python -m py_compile src/codetour_mcp/*.py`
 
 ## Key Patterns
 

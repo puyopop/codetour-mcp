@@ -35,17 +35,17 @@ pip install -e .
 
 ### Quick Test
 
-Try the demo script to see the functionality:
+Run the test suite to verify the installation:
 
 ```bash
-python examples/demo.py
+uv run pytest
 ```
 
-This will:
-1. Create a sample tour
-2. Add various types of steps
-3. Show you how to manipulate tours
-4. Output the final tour JSON
+This will run comprehensive BDD tests that cover:
+1. Creating and managing tours
+2. Adding and manipulating steps
+3. Reading and listing tours
+4. Error handling and validation
 
 ## Available Tools
 
@@ -265,8 +265,8 @@ cd codetour-mcp
 # Install in development mode with dev dependencies
 uv sync --dev
 
-# Run the demo to verify everything works
-python examples/demo.py
+# Run tests to verify everything works
+uv run pytest
 ```
 
 ### Code Quality
@@ -305,9 +305,9 @@ uv run pre-commit run --all-files
 
 Before submitting a PR, make sure:
 
-1. All existing functionality still works:
+1. All tests pass:
 ```bash
-python examples/demo.py
+uv run pytest
 ```
 
 2. Your code passes lint checks:
@@ -318,11 +318,6 @@ uv run ruff check .
 3. Your code is properly formatted:
 ```bash
 uv run ruff format --check .
-```
-
-4. Generated tours are valid JSON:
-```bash
-python -m json.tool .tours/demo-tour.tour
 ```
 
 ### Code Style
@@ -376,9 +371,9 @@ codetour-mcp/
 │   ├── __init__.py      # Package metadata
 │   ├── core.py          # Core tour management (no MCP dependencies)
 │   └── server.py        # MCP server implementation
-├── examples/
-│   ├── demo.py          # Demonstration script
-│   └── .tours/          # Example tour files
+├── tests/               # BDD test suite
+│   ├── features/        # Gherkin feature files
+│   └── test_*.py        # Step definitions
 ├── README.md            # Main documentation
 └── pyproject.toml       # Package configuration
 ```
@@ -394,6 +389,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 When adding new features:
 1. Update `core.py` if adding tour management functionality
 2. Update `server.py` if adding new MCP tools
-3. Add examples to demonstrate the new feature
+3. Add BDD tests in `tests/features/` and corresponding step definitions
 4. Update documentation in README.md
-5. Test thoroughly with the demo script
+5. Ensure all tests pass with `uv run pytest`

@@ -248,13 +248,10 @@ def insert_step_at_index(steps: list[dict[str, Any]], step: dict[str, Any], inde
 
 @app.call_tool()
 async def call_tool(name: str, arguments: Any) -> list[TextContent]:
-    """Handle tool calls using pattern matching."""
-    match name:
-        case "create_tour":
-            path = arguments["path"]
-            title = arguments["title"]
-            description = arguments.get("description", "")
-
+    """Handle tool calls using pattern matching on both name and arguments."""
+    match (name, arguments):
+        case ("create_tour", {"path": path, "title": title, **rest}):
+            description = rest.get("description", "")
             tour_data = {"title": title, "steps": []}
             if description:
                 tour_data["description"] = description
@@ -262,13 +259,12 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             save_tour(path, tour_data)
             return [TextContent(type="text", text=f"Created tour '{title}' at {path}")]
 
-        case "read_tour":
-            path = arguments["path"]
+        case ("read_tour", {"path": path}):
             tour_data = load_tour(path)
             return [TextContent(type="text", text=json.dumps(tour_data, indent=2))]
 
-        case "list_tours":
-            dir_path = arguments.get("dir", ".tours")
+        case ("list_tours", args):
+            dir_path = args.get("dir", ".tours")
             tours_dir = Path(dir_path)
 
             if not tours_dir.exists():
@@ -291,31 +287,27 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
 
             return [TextContent(type="text", text=json.dumps(tours, indent=2))]
 
-        case "list_steps":
-            tour_path = arguments["tour_path"]
+        case ("list_steps", {"tour_path": tour_path}):
             tour_data = load_tour(tour_path)
             steps = tour_data.get("steps", [])
 
             step_list = [create_step_info(i, step) for i, step in enumerate(steps)]
             return [TextContent(type="text", text=json.dumps(step_list, indent=2))]
 
-        case "get_step":
-            tour_path = arguments["tour_path"]
-            index = int(arguments["index"])
-
+        case ("get_step", {"tour_path": tour_path, "index": index}):
+            index = int(index)
             tour_data = load_tour(tour_path)
             steps = tour_data.get("steps", [])
 
             validate_step_index(index, steps)
             return [TextContent(type="text", text=json.dumps(steps[index], indent=2))]
 
-        case "insert_step":
-            tour_path = arguments["tour_path"]
-            file = arguments["file"]
-            pattern_regex = arguments["pattern_regex"]
-            description = arguments["description"]
-            title = arguments.get("title")
-            index = arguments.get("index")
+        case (
+            "insert_step",
+            {"tour_path": tour_path, "file": file, "pattern_regex": pattern_regex, "description": description, **rest},
+        ):
+            title = rest.get("title")
+            index = rest.get("index")
 
             tour_data = load_tour(tour_path)
             steps = tour_data.get("steps", [])
@@ -328,13 +320,12 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
 
             return [TextContent(type="text", text=f"Inserted step at index {actual_index}")]
 
-        case "insert_step_by_directory":
-            tour_path = arguments["tour_path"]
-            file = arguments["file"]
-            directory = arguments["directory"]
-            description = arguments["description"]
-            title = arguments.get("title")
-            index = arguments.get("index")
+        case (
+            "insert_step_by_directory",
+            {"tour_path": tour_path, "file": file, "directory": directory, "description": description, **rest},
+        ):
+            title = rest.get("title")
+            index = rest.get("index")
 
             tour_data = load_tour(tour_path)
             steps = tour_data.get("steps", [])
@@ -347,11 +338,10 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
 
             return [TextContent(type="text", text=f"Inserted step at index {actual_index}")]
 
-        case "update_step":
-            tour_path = arguments["tour_path"]
-            index = int(arguments["index"])
-            description = arguments.get("description")
-            title = arguments.get("title")
+        case ("update_step", {"tour_path": tour_path, "index": index, **rest}):
+            index = int(index)
+            description = rest.get("description")
+            title = rest.get("title")
 
             tour_data = load_tour(tour_path)
             steps = tour_data.get("steps", [])
@@ -368,10 +358,8 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
 
             return [TextContent(type="text", text=f"Updated step at index {index}")]
 
-        case "remove_step":
-            tour_path = arguments["tour_path"]
-            index = int(arguments["index"])
-
+        case ("remove_step", {"tour_path": tour_path, "index": index}):
+            index = int(index)
             tour_data = load_tour(tour_path)
             steps = tour_data.get("steps", [])
 

@@ -1,0 +1,18 @@
+{
+  "title": "Demo Tour",
+  "description": "This tour demonstrates the project structure",
+  "steps": [
+    {
+      "file": "src/codetour_mcp/server.py",
+      "pattern": "@app.list_tools",
+      "title": "Tool Registration",
+      "description": "UPDATED: This decorator is the key to exposing tools to MCP clients."
+    },
+    {
+      "directory": "examples",
+      "file": "examples/demo.py",
+      "title": "Demo Script",
+      "description": "This example script shows how to use the core functionality directly."
+    }
+  ]
+}
